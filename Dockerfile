@@ -1,5 +1,7 @@
 FROM openjdk:8-jdk
 
+RUN echo "Asia/Shanghai" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata
+COPY sources.list /etc/apt/sources.list
 RUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
 
 ENV JENKINS_HOME /var/jenkins_home
@@ -51,6 +53,10 @@ RUN curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war \
 
 ENV JENKINS_UC https://updates.jenkins.io
 RUN chown -R ${user} "$JENKINS_HOME" /usr/share/jenkins/ref
+
+COPY install-docker.sh /tmp/
+RUN chmod +x /tmp/install-docker.sh \
+    && /tmp/install-docker.sh
 
 # for main web interface:
 EXPOSE 8080
